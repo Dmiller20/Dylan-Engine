@@ -130,13 +130,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="util.cpp" />
+    <ClCompile Include="World_Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="math_3d.h" />
     <ClInclude Include="ogldev_types.h" />
     <ClInclude Include="ogldev_util.h" />
+    <ClInclude Include="World_Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.fs" />

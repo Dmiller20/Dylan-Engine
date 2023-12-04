@@ -21,6 +21,12 @@
     <ClCompile Include="util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="World_Transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math_3d.h">
@@ -30,6 +36,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ogldev_types.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="World_Transform.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
