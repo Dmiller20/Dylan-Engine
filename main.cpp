@@ -11,7 +11,6 @@
 #include <GL/freeglut.h>
 #include <stdio.h>
 #include <string>
-#include <math.h>
 #include "World_Transform.h"
 #include "math_3d.h"
 #include "ogldev_util.h"
@@ -24,29 +23,42 @@ int WindowHeight = 720;
 int WindowWidth = 1280;
 
 WorldTrans CubeWorldTransform;
+
+float FOV = 120.0f;
+float zNear = 1.0f;
+float zFar = 10.0f;
+
 Camera GameCamera;
 
-float FOV = 90.0f;
-float zNear = 1.0f;
-float zFar = 10.0f
-PersProjInfo PersProjInfo = { FOV, WindowWidth, WindowHeight, zNear, zFar };
+static void KeyboardCB(unsigned char key, int mouse_x, int mouse_y)
+{
+	GameCamera.OnKeyboard(key);
 
+}
+
+static void SpecialKeyboardCB(int key, int mouse_x, int mouse_y)
+{
+	GameCamera.OnKeyboard(key);
+
+}
+
+PersProjInfo PPInfo = { FOV, WindowWidth, WindowHeight, zNear, zFar };
 static void RenderSceneCB()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	float YRotationAngle = 1.0f;
 
-	CubeWorldTransform.SetPosition{0.0f, 0.0f, 2.0f};
+	CubeWorldTransform.SetPosition(0.0f, 0.0f, 2.0f);
 	CubeWorldTransform.Rotate(0.0f, YRotationAngle, 0.0f);
 	Matrix4f World = CubeWorldTransform.GetMatrix();
 
 	Matrix4f View = GameCamera.GetMatrix();
 
 	Matrix4f Projection;
-	Projection.InitPersProjTransform(PersProjInfo);
+	Projection.InitPersProjTransform(PPInfo);
 
-	Matrix4f WVP = Projection * Camera * World;
+	Matrix4f WVP = Projection * View * World;
 
 	glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &WVP.m[0][0]);
 
@@ -91,7 +103,7 @@ struct Vertex {
 static void CreateVertexBuffer()
 {
 	Vertex Vertices[8];
-
+						//x    y      z
 	Vertices[0] = Vertex(0.5f, 0.5f, 0.5f);
 	Vertices[1] = Vertex(-0.5f, 0.5f, -0.5f);
 	Vertices[2] = Vertex(-0.5f, 0.5f, 0.5f);
@@ -257,6 +269,8 @@ const char* pFSFileName = "shader.fs";
 		CompileShaders();
 
 		glutDisplayFunc(RenderSceneCB);
+		glutKeyboardFunc(KeyboardCB);
+		glutSpecialFunc(SpecialKeyboardCB);
 
 		glutMainLoop();
 	

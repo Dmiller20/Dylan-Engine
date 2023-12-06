@@ -1,89 +1,81 @@
-#include <GL/freeglut.h>
 #include "camera.h"
+#include <GL/freeglut.h>
+
 
 Camera::Camera()
 {
-	m_pos = Vector3f(0.0f, 0.0f, 0.0f);
-	m_target = Vector3f(0.0f, 0.0f, 1.0f);
-	m_up = Vector3f(0.0f, 1.0f, 0.0f);
-
+    m_pos = Vector3f(0.0f, 0.0f, 0.0f);
+    m_target = Vector3f(0.0f, 0.0f, 1.0f);
+    m_up = Vector3f(0.0f, 1.0f, 0.0f);
 }
+
 
 void Camera::SetPosition(float x, float y, float z)
 {
-	m_pos.x = x;
-	m_pos.y = y;
-	m_pos.z = z;
-
+    m_pos.x = x;
+    m_pos.y = y;
+    m_pos.z = z;
 }
 
 
 void Camera::OnKeyboard(unsigned char Key)
 {
-	switch(Key)
-	{
-	case GLUT_KEY_UP:
-		m_pos += (m_target * m_speed);
-		break;
+    switch (Key) {
 
-	case GLUT_KEY_DOWN:
-		m_pos -= (m_target * m_speed);
-		break;
+    case GLUT_KEY_UP:
+        m_pos += (m_target * m_speed);
+        break;
 
-	case GLUT_KEY_LEFT:
-		{
-			Vector3f Left = m_target.Cross(m_up);
-			Left.Normalize();
-			Left *= m_speed;
-			m_pos += Left;
+    case GLUT_KEY_DOWN:
+        m_pos -= (m_target * m_speed);
+        break;
 
-		}
-		break;
+    case GLUT_KEY_LEFT:
+    {
+        Vector3f Left = m_target.Cross(m_up);
+        Left.Normalize();
+        Left *= m_speed;
+        m_pos += Left;
+    }
+    break;
 
-	case GLUT_KEY_RIGHT:
-		{
-		Vector3f Right = m_target.Cross(m_target);
-		Right.Normalize();
-		Right *= m_speed;
-		m_pos += Right;
+    case GLUT_KEY_RIGHT:
+    {
+        Vector3f Right = m_up.Cross(m_target);
+        Right.Normalize();
+        Right *= m_speed;
+        m_pos += Right;
+    }
+    break;
 
-		}
-		break;
-	
+    case GLUT_KEY_PAGE_UP:
+        m_pos.y += m_speed;
+        break;
 
-	case GLUT_KEY_PAGE_UP:
-		m_pos.y += m_speed;
-		break;
+    case GLUT_KEY_PAGE_DOWN:
+        m_pos.y -= m_speed;
+        break;
 
-	case GLUT_KEY_PAGE_DOWN:
-		m_pos.y -= m_speed;
-		break;
+    case '+':
+        m_speed += 0.1f;
+        printf("Speed changed to %f\n", m_speed);
+        break;
 
-	case '+':
-		m_speed += 0.1;
-		if (m_speed > 5.0f)
-		{
-			m_speed = 5.0f;
-		}
-		printf("Speed changed to %f\n", m_speed);
-		break;
-
-	case '-':
-		m_speed -= 0.1;
-		if (m_speed < 0.1f)
-		{
-			m_speed = 0.1f;
-		}
-		printf("Speed Changed to %f\n", m_speed);
-		break;
-	}
-
+    case '-':
+        m_speed -= 0.1f;
+        if (m_speed < 0.1f) {
+            m_speed = 0.1f;
+        }
+        printf("Speed changed to %f\n", m_speed);
+        break;
+    }
 }
+
 
 Matrix4f Camera::GetMatrix()
 {
-	Matrix4f CameraTransformation;
-	CameraTransformation.InitCameraTransform(m_pos, m_target, m_up);
+    Matrix4f CameraTransformation;
+    CameraTransformation.InitCameraTransform(m_pos, m_target, m_up);
 
-	return CameraTransformation;
+    return CameraTransformation;
 }
