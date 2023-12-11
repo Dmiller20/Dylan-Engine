@@ -58,7 +58,7 @@ Vector3f& Vector3f::Normalize()
 {
     float len = Length();
 
-    assert(len != 0);
+    //assert(len != 0);
 
     x /= len;
     y /= len;

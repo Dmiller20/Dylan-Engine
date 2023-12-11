@@ -15,12 +15,13 @@
 #include "math_3d.h"
 #include "ogldev_util.h"
 #include "Camera.h"
+#include "stb_image.h"
 
 GLuint VBO;
 GLuint IBO;
 GLint gWorldLocation;
-int WindowHeight = 720;
-int WindowWidth = 1280;
+int Window_Height = 720;
+int Window_Width = 1280;
 
 WorldTrans CubeWorldTransform;
 
@@ -28,7 +29,10 @@ float FOV = 120.0f;
 float zNear = 1.0f;
 float zFar = 10.0f;
 
-Camera GameCamera;
+Vector3f CameraPos(0.0f, 0.0f, -1.0f);
+Vector3f CameraTarget(0.0f, 0.0f, 1.0f);
+Vector3f CameraUp(0.0f, 1.0f, 0.0f);
+Camera GameCamera(Window_Width, Window_Height, CameraPos, CameraTarget, CameraUp);
 
 static void KeyboardCB(unsigned char key, int mouse_x, int mouse_y)
 {
@@ -42,10 +46,19 @@ static void SpecialKeyboardCB(int key, int mouse_x, int mouse_y)
 
 }
 
-PersProjInfo PPInfo = { FOV, WindowWidth, WindowHeight, zNear, zFar };
+static void PassiveMouseCB(int x, int y)
+{
+	GameCamera.OnMouse(x, y);
+
+}
+
+PersProjInfo PPInfo = { FOV, Window_Width, Window_Height, zNear, zFar };
+
 static void RenderSceneCB()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	GameCamera.OnRenderer();
 
 	float YRotationAngle = 1.0f;
 
@@ -83,11 +96,25 @@ static void RenderSceneCB()
 	glutSwapBuffers();
 	}
 
+
+
+static void InitializeGlutCallbacks()
+{
+	glutDisplayFunc(RenderSceneCB);
+	glutKeyboardFunc(KeyboardCB);
+	glutSpecialFunc(SpecialKeyboardCB);
+	glutPassiveMotionFunc(PassiveMouseCB);
+
+}
+
+
 struct Vertex {
 	Vector3f pos;
 	Vector3f color;
 
+
 	Vertex() {}
+
 
 	Vertex(float x, float y, float z) {
 		pos = Vector3f(x, y, z);
@@ -106,12 +133,13 @@ static void CreateVertexBuffer()
 						//x    y      z
 	Vertices[0] = Vertex(0.5f, 0.5f, 0.5f);
 	Vertices[1] = Vertex(-0.5f, 0.5f, -0.5f);
-	Vertices[2] = Vertex(-0.5f, 0.5f, 0.5f);
-	Vertices[3] = Vertex(0.5f, -0.5f, -0.5f);
+	Vertices[2] = Vertex(-0.5f, 0.5f, 0.75f);
+	Vertices[3] = Vertex(0.5f, -0.75f, -0.5f);
 	Vertices[4] = Vertex(-0.5f, -0.5f, -0.5f);
 	Vertices[5] = Vertex(0.5f, 0.5f, -0.5f);
-	Vertices[6] = Vertex(0.5f, -0.5f, 0.5f);
+	Vertices[6] = Vertex(0.5f, -0.25f, 0.5f);
 	Vertices[7] = Vertex(-0.5f, -0.5f, 0.5f);
+	
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -133,7 +161,7 @@ static void CreateIndexBuffer()
 								5, 0, 6,
 								7, 4, 3,
 								2, 1, 4,
-								0, 2, 7
+								0, 2, 7,
 						 };
 	glGenBuffers(1, &IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
@@ -241,7 +269,7 @@ const char* pFSFileName = "shader.fs";
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 
 		
-		glutInitWindowSize(WindowWidth, WindowHeight);
+		glutInitWindowSize(Window_Width, Window_Height);
 
 		glutInitWindowPosition(200, 100);
 		int win = glutCreateWindow("Dylan's OpenGL Game Engine");
@@ -254,6 +282,13 @@ const char* pFSFileName = "shader.fs";
 			fprintf(stderr, "Error : '%s' \n", glewGetErrorString(res));
 			return 1;
 		}
+
+		char game_mode_string[64];
+		snprintf(game_mode_string, sizeof(game_mode_string), "%dx%d@32", Window_Width, Window_Height);
+		glutGameModeString(game_mode_string);
+		glutEnterGameMode();
+
+		InitializeGlutCallbacks();
 
 
 		GLclampf Red = 0.0f, Green = 0.0f, Blue = 0.0f, Alpha = 0.0f;
